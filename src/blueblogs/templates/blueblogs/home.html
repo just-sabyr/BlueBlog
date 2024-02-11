@@ -1,0 +1,37 @@
+{% extends "blueblogs/base.html" %}
+
+{% block logged_in_nav %}
+{% if not has_blog %}
+    <li><a href="{% url 'blog:new-blog' %}">Create New Blog</a></li>
+{% else %}
+    <li><a href="{% url 'blog:update-blog' pk=blog.pk %}">Edit Blog Settings</a></li>
+    <li><a href="{% url 'blog:new-blog-post' %}">Create New Blog Post</a></li>
+{% endif %}
+
+{% endblock logged_in_nav %}
+
+{% block content %}
+{% if blog_posts %}
+<h2>Blog Posts</h2>
+<ul>
+    {% for post in blog_posts %}
+    <li><a href="{% url 'blog:blog-post-details' pk=post.pk %}">{{ post.title }} </a> | 
+        <a href="{% url 'blog:update-blog-post' pk=post.pk %}">Edit Post</a> |
+        <a href="{% url 'blog:share-blog-post-with-blog' pk=post.pk %}">Share Post</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if shared_posts %}
+<h2>Shared Blog Posts</h2>
+<ul>
+    {% for post in shared_posts %}
+    <li>
+        <a href="{% url 'blog:blog-post-details' pk=post.pk %}">{{ post.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock content%}

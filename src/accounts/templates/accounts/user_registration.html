@@ -1,0 +1,10 @@
+{% extends "blueblogs/base.html" %}
+
+{% block content %}
+<h1>Create New User</h1>
+<form action="accounts:register" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Create Account" />
+    <input type="hidden" name="next" value="blueblogs:home"/>
+</form>
+{% endblock content %}
