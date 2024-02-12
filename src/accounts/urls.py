@@ -3,7 +3,7 @@
 from django.urls import path, include
 
 from .views import UserRegistrationView, CustomLogoutView
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView
 
 app_name = 'accounts'
 urlpatterns = [

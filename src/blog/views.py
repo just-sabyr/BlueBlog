@@ -1,6 +1,6 @@
 from typing import Any
 from django.db.models.query import QuerySet
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http.response import HttpResponseRedirect
 from django.utils.text import slugify
@@ -81,46 +81,49 @@ class BlogPostDetailsView(DetailView):
     model = BlogPost
     template_name = 'blog/blog_post_details.html'
 
-class SharedBlogView(TemplateView):
+class ShareBlogPostView(TemplateView):
     template_name = 'blog/share_blog_post.html'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(SharedBlogView, self).dispatch(request, *args, **kwargs)
+        return super(ShareBlogPostView, self).dispatch(request, *args, **kwargs)
     
     def get_context_data(self, pk, **kwargs: Any) -> dict[str, Any]:
         blog_post = BlogPost.objects.get(pk=pk)
         currently_shared_with = blog_post.shared_to.all()
         currently_shared_with_ids = map(lambda x: x.pk, currently_shared_with)
-        exclude_from_can_share_with = [blog_post.blog.pk] + list(currently_shared_with_ids)
+        exclude_from_can_share_list = [blog_post.blog.pk] + list(currently_shared_with_ids)
 
-        can_be_shared_with = Blog.objects.exclude(pk__in=exclude_from_can_share_with)
+        can_be_shared_with = Blog.objects.exclude(pk__in=exclude_from_can_share_list)
 
-        return {
+        ctx = {
             'post': blog_post,
             'is_shared_with': currently_shared_with,
-            'can_be_shard_with': can_be_shared_with
+            'can_be_shared_with': can_be_shared_with
         }
+
+        return ctx
     
 class SharePostWithBlog(View):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        super(SharePostWithBlog, self).dispatch(request, *args, **kwargs)
+        return super(SharePostWithBlog, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, post_pk, blog_pk):
         blog_post = BlogPost.objects.get(pk=post_pk)
         if blog_post.blog.owner != request.user:
-            return HttpResponseForbidden('You can share only the post you created.')
+            return HttpResponseForbidden('You can use sharing option only in the posts you created.')
         
-        blog = Blog.objects.get(pk=blog_pk)
+        print('blog_pk: ', blog_pk)
+        blog = Blog.objects.get(pk=blog_pk) 
         blog_post.shared_to.add(blog)
 
-        return HttpResponseRedirect('blueblogs:home')
+        return HttpResponseRedirect(reverse('blueblogs:home'))
     
-class StopSharingPostwithBlog(View):
+class StopSharingPostWithBlog(View):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(StopSharingPostwithBlog, self).dispatch(request, *args, **kwargs)
+        return super(StopSharingPostWithBlog, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, post_pk, blog_pk):
         blog_post = BlogPost.objects.get(pk=post_pk)

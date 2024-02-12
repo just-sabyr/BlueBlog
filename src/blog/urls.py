@@ -1,7 +1,7 @@
 """Defines url patterns for the blog app"""
 from django.urls import path
 
-from .views import NewBlogView, UpdateBlogView, NewBlogPostView, UpdateBlogPostView, BlogPostDetailsView, SharePostWithBlog, SharedBlogView, StopSharingPostwithBlog
+from .views import NewBlogView, UpdateBlogView, NewBlogPostView, UpdateBlogPostView, BlogPostDetailsView, ShareBlogPostView, SharePostWithBlog, StopSharingPostWithBlog
 
 app_name = 'blog'
 urlpatterns = [
@@ -12,7 +12,7 @@ urlpatterns = [
     path('post/<int:pk>/', BlogPostDetailsView.as_view(), name='blog-post-details'),
 
     # Sharing functionality
-    path('post/<int:pk>/share/', SharedBlogView.as_view(), name='share-blog-post-with-blog'),
+    path('post/<int:pk>/share/', ShareBlogPostView.as_view(), name='share-blog-post-with-blog'),
     path('post/<int:post_pk>/share/to/<int:blog_pk>/', SharePostWithBlog.as_view(), name='share-post-with-blog'),
-    path('post/<int:post_pk>/stop/share/to/<int:blog_pk>/', StopSharingPostwithBlog.as_view(), name='stop-sharing-post-with-blog'),
+    path('post/<int:post_pk>/stop/share/to/<int:blog_pk>/', StopSharingPostWithBlog.as_view(), name='stop-sharing-post-with-blog'),
 ]
